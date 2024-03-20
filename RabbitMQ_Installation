@@ -1,0 +1,20 @@
+-> Installation of RabbitMQ
+
+Step I : Install Essential Dependencies
+	First thing we have to do update & upgrade the system. Then we will install the require dependencies like curl & gnupg.
+
+	sudo apt-get update 
+	sudo apt-get upgrade -y
+
+Step II : Enable apt HTTPS Transport
+	open terminal in the current directory and "bash deploy rabbitmq.sh"
+	
+Step III: Now check the status by using:
+	  sudo systemctl status rabbitmq-server
+	  if it is not running use:
+	    sudo systemctl start rabbitmq-server
+Step IV : sudo rabbitmq-plugins enable rabbitmq_management
+
+Step V  : Check rabbitmq running in 15672 port in local server
+
+

@@ -1,0 +1,17 @@
+Setting up cloudmqp account:
+
+-> Open: https://customer.cloudamqp.com/signup?_gl=1*vvcbj2*_gcl_au*MTg3Mjk4MTA3Mi4xNzEwNDA3NzM0
+
+-> To signup fill all the details 
+
+-> Create an instance, Select the instance you want (Little Lemur - Free)
+ 
+-> Select a region and data center (From AWS, AZURE, GCP, DigitalOcean)
+
+-> Click on confirm to create an instance
+
+-> You'll get a dashboard showing your instance, To use the instance remotely click on instance name and search for AMQP details and copy url
+
+-> Now you can use the url to access the rabbitmq remotely
+
+-> To open rabbitmq go to the instances and click on RabbitMQ Manager

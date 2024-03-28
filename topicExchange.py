@@ -1,10 +1,11 @@
 import pika
 
-EXCHANGE_NAME = 'nanoshop_exchange'
+EXCHANGE_NAME = 'test'
 
 # Establishing connection to RabbitMQ server
 cloud_amqp_url = 'amqps://dzupfdkl:cyEZjbS34eyAm971iIZyF5kgOpEoS3wK@lionfish.rmq.cloudamqp.com/dzupfdkl'
 connection_parameters = pika.URLParameters(cloud_amqp_url)
+connection = pika.BlockingConnection(connection_parameters)
 
 
 def connect_to_rabbitmq():
@@ -43,12 +44,12 @@ def sender(message, message_type, channel, exchange_name):
                               mandatory=True)
         print(f" [x] Sent '{message}' with type '{message_type}' to exchange '{exchange_name}'.")
     except pika.exceptions.UnroutableError as e:
-        channel.exchange_declare(exchange="dlx_exchange", exchange_type="fanout")
-        channel.basic_publish(exchange="dlx_exchange", routing_key="", body=message,
+        channel.exchange_declare(exchange=f"dlx_{message_type}", exchange_type="fanout")
+        channel.basic_publish(exchange=f"dlx_{message_type}", routing_key=f"dlx_{message_type}", body=message,
                               properties=pika.BasicProperties(delivery_mode=2))
         queue_name=f"dlx_{message_type}"
         channel.queue_declare(queue=queue_name, durable=True)
-        channel.queue_bind(exchange="dlx_exchange", queue=queue_name, routing_key=queue_name)
+        channel.queue_bind(exchange=f"dlx_{message_type}", queue=queue_name, routing_key=queue_name)
         print(f"Receiver OFFLINE... Sent Message to DLX ")
 
 
@@ -63,6 +64,7 @@ def dlx_receiver(message_type,channel):
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
         # Consume messages until the DLX queue is empty
+
         while True:
             method_frame, header_frame, body = channel.basic_get(queue=f"dlx_{message_type}", auto_ack=False)
             if method_frame:
@@ -80,11 +82,11 @@ def receiver(message_type, channel):
     dlx_receiver(message_type,channel)
     try:
         # Declare a durable queue (not exclusive)
-        result = channel.queue_declare(queue=f'dlx_{message_type}', durable=True)
+        result = channel.queue_declare(queue='', exclusive=True,durable=True)
         queue_name = result.method.queue
 
         # Bind the queue to the exchange with the routing key pattern
-        channel.queue_bind(exchange=EXCHANGE_NAME, queue=queue_name, routing_key=f"{message_type}.*")
+        channel.queue_bind(exchange=EXCHANGE_NAME, queue=queue_name, routing_key=f"{message_type}.#")
 
         # Callback function for receiving messages
         def callback(ch, method, properties, body):
@@ -112,12 +114,30 @@ def main():
 
         # Declare exchanges and queues
         declare_exchange(channel, EXCHANGE_NAME)
-        # sender("Error Message", "error", channel, EXCHANGE_NAME)
-        receiver("error", channel)
+        # sender("Message", "debug", channel, EXCHANGE_NAME)
+        receiver("debug", channel)
+        # receiver("agv", channel)
     except KeyboardInterrupt:
         print("Exiting...")
     finally:
         close_connection(connection)
+
+
+exit_command = False
+def test_supervisor():
+    while True:
+        continue
+
+def main(command: str):
+    while True:
+        command= input("Enter a command - supervisor, exit:  ")
+        if command == "supervisor":
+            test_supervisor()
+        if command == "exit":
+            break
+        continue
+    return True
+
 
 
 if __name__ == '__main__':

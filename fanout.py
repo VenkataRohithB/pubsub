@@ -1,3 +1,4 @@
+import json
 import os
 import pika
 
@@ -33,7 +34,7 @@ def receive():
         receive()
 
 
-def send_messages():
+def send_messages(msg: dict):
     connection = pika.BlockingConnection(connection_parameters)
     channel = connection.channel()
 
@@ -41,7 +42,7 @@ def send_messages():
     channel.exchange_declare(exchange='messages', exchange_type='fanout')
 
     # Message to send
-    message = "Important message!"
+    message = json.dumps(msg)
 
     # Publish the message to the exchange
     channel.basic_publish(exchange='messages', routing_key='', body=message.encode())
@@ -49,3 +50,10 @@ def send_messages():
 
     # Close the connection
     connection.close()
+
+a =input()
+if a == "1":
+    msg = {"hello": 123}
+    send_messages(msg)
+else:
+    receive()

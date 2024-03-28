@@ -10,7 +10,7 @@ MESSAGE = "Message For Testing "
 QUEUE_NAME = "demo"
 iters=50
 total_time_taken = 0
-
+s = time.time()
 for i in range(iters):
     # Sender Code
     channel.queue_declare(queue=QUEUE_NAME, durable=True)
@@ -42,5 +42,6 @@ for i in range(iters):
         print("")
         total_time_taken += (end - start)
     print("")
-
+e = time.time()
 print(f"Average total time taken for sending and receiving {iters} messages: {(total_time_taken / iters) * 1000} ms")
+print(f"time: {e-s}")

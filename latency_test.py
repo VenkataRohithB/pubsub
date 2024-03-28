@@ -41,7 +41,9 @@ def measure_latency_messages():
     channel.queue_declare(queue=queue_name)
 
     # Send a message
-    send_message(channel, queue_name, "Test message")
+    s = time.time()
+    msg = "Test message"
+    send_message(channel, queue_name, msg)
     start_time = time.time()
 
     # Receive the message
@@ -50,7 +52,7 @@ def measure_latency_messages():
 
     if received_message:
         latency = (end_time - start_time) * 1000  # in milliseconds
-        print(f"Latency: {latency:.2f} ms {received_message} ")
+        print(f"Latency: send_time: {(start_time - s) * 1000} ms {received_message} receive_time: {latency:.2f} ms {received_message} ")
     else:
         print("No message received")
     connection.close()
